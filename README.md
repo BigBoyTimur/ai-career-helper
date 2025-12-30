@@ -1,87 +1,86 @@
-# Welcome to React Router!
+# AI Career Helper Frontend
 
-A modern, production-ready template for building full-stack React applications using React Router.
+Фронтенд-приложение на React Router + Vite с модульной структурой. Ниже — как запустить проект, краткая архитектура и ссылки на примеры запросов данных.
 
-[![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/remix-run/react-router-templates/tree/main/default)
+## Запуск проекта
 
-## Features
+### 1) Установить Node.js и pnpm
 
-- 🚀 Server-side rendering
-- ⚡️ Hot Module Replacement (HMR)
-- 📦 Asset bundling and optimization
-- 🔄 Data loading and mutations
-- 🔒 TypeScript by default
-- 🎉 TailwindCSS for styling
-- 📖 [React Router docs](https://reactrouter.com/)
-
-## Getting Started
-
-### Installation
-
-Install the dependencies:
+- Node.js: используйте актуальную LTS-версию.
+- pnpm: удобнее всего через Corepack (входит в Node.js).
 
 ```bash
-npm install
+corepack enable
+corepack prepare pnpm@latest --activate
 ```
 
-### Development
-
-Start the development server with HMR:
+Проверить версии:
 
 ```bash
-npm run dev
+node -v
+pnpm -v
 ```
 
-Your application will be available at `http://localhost:5173`.
-
-## Building for Production
-
-Create a production build:
+### 2) Установить зависимости
 
 ```bash
-npm run build
+pnpm install
 ```
 
-## Deployment
+### 3) Переменные окружения
 
-### Docker Deployment
+Файл `.env` уже есть в репозитории. При необходимости поменяйте адреса API:
 
-To build and run using Docker:
+```
+VITE_AUTH_API_BASE_URL=http://localhost:4000/api/
+VITE_AUTH_APP_ID=3326168f-5238-405b-aad3-eb8b1f9872bd
+VITE_API_BASE_URL=http://localhost:8000
+```
+
+### 4) Запуск в dev-режиме
 
 ```bash
-docker build -t my-app .
-
-# Run the container
-docker run -p 3000:3000 my-app
+pnpm dev
 ```
 
-The containerized application can be deployed to any platform that supports Docker, including:
+Приложение будет доступно на `http://localhost:5173`.
 
-- AWS ECS
-- Google Cloud Run
-- Azure Container Apps
-- Digital Ocean App Platform
-- Fly.io
-- Railway
+### 5) Сборка и запуск production
 
-### DIY Deployment
-
-If you're familiar with deploying Node applications, the built-in app server is production-ready.
-
-Make sure to deploy the output of `npm run build`
-
-```
-├── package.json
-├── package-lock.json (or pnpm-lock.yaml, or bun.lockb)
-├── build/
-│   ├── client/    # Static assets
-│   └── server/    # Server-side code
+```bash
+pnpm build
+pnpm start
 ```
 
-## Styling
+## Архитектура (кратко)
 
-This template comes with [Tailwind CSS](https://tailwindcss.com/) already configured for a simple default starting experience. You can use whatever CSS framework you prefer.
+- `app/pages` — страницы и маршруты. Каждая страница обычно экспортирует `clientLoader`/`clientAction` и UI.
+- `app/modules` — бизнес-модули по доменам (chat, auth, knowledge-base). Внутри чаще всего есть `api`, `model`, `ui`.
+- `app/shared` — переиспользуемые компоненты и инфраструктура: UI-kit, клиенты запросов, конфиг окружения.
 
----
+## Примеры получения данных (GET/POST)
 
-Built with ❤️ using React Router.
+GET и POST запросы реализованы через axios-клиент:
+
+- Клиент: `app/shared/api/axios-client.ts`
+- API-методы чатов: `app/modules/chat/api/chats.ts`
+
+Примеры на странице чатов:
+
+- GET: `app/pages/chat.tsx` — `clientLoader` вызывает `getChats` и `getChatById`.
+- POST: `app/pages/chat.tsx` — `clientAction` вызывает `createChat`.
+
+Соответствующие запросы внутри API-слоя:
+
+- GET `/api/chats/all` и `/api/chats/:id` в `app/modules/chat/api/chats.ts`
+- POST `/api/chats` в `app/modules/chat/api/chats.ts`
+
+## UI и shadcn
+
+В проекте используется набор компонентов shadcn/ui. Базовые компоненты находятся в `app/shared/components/ui`, а их стили и утилиты подключены через Tailwind CSS.
+
+Пример команды для добавления компонента через pnpm:
+
+```bash
+pnpm dlx shadcn@latest add button
+```
